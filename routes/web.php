@@ -14,5 +14,26 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
 });
+
+
+Route::get('contatos/buscar',[ContatosController::class,'buscar']);
+Route::resource('contatos',ContatosController::class);
+
+Route::get('livros/buscar',[LivrosController::class,'buscar']);
+Route::resource('livros',LivrosController::class);
+
+Route::get('emprestimos/buscar',[EmprestimosController::class,'buscar']);
+Route::resource('emprestimos',EmprestimosController::class);
+
+Route::get('emprestimos/buscar',[EmprestimosController::class,'buscar']);
+Route::put('emprestimos/{emprestimo}/devolver',[EmprestimosController::class,'devolver'])->name('emprestimos.devolver');
+Route::resource('emprestimos',EmprestimosController::class);
+
+Auth::routes();
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
