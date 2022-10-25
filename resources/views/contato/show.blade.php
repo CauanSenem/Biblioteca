@@ -67,10 +67,10 @@
                                 <a href="{{url('emprestimos/'.$emprestimo->id)}}">{{$emprestimo->id}}</a>
                             </td>
                             <td>
-                                {{$emprestimo->livro_id}} - {{$emprestimo->livro->titulo}}
+                                {{$emprestimo->idLivro}} - {{$emprestimo->livro->titulo}}
                             </td>
                             <td>
-                                {{\Carbon\Carbon::create($emprestimo->datahora)->format('d/m/Y H:i:s')}}
+                                {{\Carbon\Carbon::create($emprestimo->dataHora)->format('d/m/Y H:i:s')}}
                             </td>
                             <td>{!!$emprestimo->devolvido!!}</td>
                         </tr>

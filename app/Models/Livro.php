@@ -10,6 +10,6 @@ class Livro extends Model
     use HasFactory;
 
     public function emprestimos(){
-        return $this->hasMany(Emprestimo::class);
+        return $this->hasMany(Emprestimo::class,'idLivro','id');
     }
 }

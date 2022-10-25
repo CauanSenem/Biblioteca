@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Emprestimo;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Livro;
 use App\Models\Contato;
 use Illuminate\Http\Request;
@@ -17,8 +18,12 @@ class EmprestimosController extends Controller
      */
     public function index()
     {
-        $emprestimos = Emprestimo::paginate(5);
-        return view('emprestimo.index',array('emprestimos' => $emprestimos,'busca'=>null));
+        if (Auth::check()) {
+            $emprestimos = Emprestimo::simplepaginate(5);
+            return view('emprestimo.index',array('emprestimos' => $emprestimos,'busca'=>null));
+        } else {
+            return redirect('login');
+        }
     }
 
     /**
@@ -35,10 +40,13 @@ class EmprestimosController extends Controller
 
     public function create()
     {
+       if (Auth::check()) {
         $contatos = Contato::all();
         $livros = Livro::all();
-       return view('emprestimo.create',['contatos'=>$contatos,
-       'livros'=>$livros]);
+        return view('emprestimo.create',['contatos'=>$contatos,'livros'=>$livros]);
+    } else {
+        return redirect('login');
+    }
     }
 
     /**
@@ -49,17 +57,24 @@ class EmprestimosController extends Controller
      */
     public function store(Request $request)
     {
-        $emprestimo = new Emprestimo();
-        $emprestimo->idContato = $request->input('idContato');
-        $emprestimo->idLivro = $request->input('idLivro');
-        $emprestimo->dataHora=
-        \Carbon\Carbon::createFromFormat('d/m/Y H:i:s',
-        $request->input('dataHora'));
-        $emprestimo->obs = $request->input('obs');
-        $emprestimo->dataDevolucao = null;
+        if (Auth::check()) {
+            $this->validate($request,[
+                'idContato' => 'required',
+                'idLivro' => 'required',
+                'dataHora' => 'required'
+            ]);
+            $emprestimo = new Emprestimo();
+            $emprestimo->idContato = $request->input('idContato');
+            $emprestimo->idLivro = $request->input('idLivro');
+            $emprestimo->dataHora = \Carbon\Carbon::createFromFormat('d/m/Y H:i:s', $request->input('dataHora'));
+            $emprestimo->obs = $request->input('obs');
+            $emprestimo->dataDevolucao = null;
 
-        if($emprestimo->save()){
-            return redirect('emprestimos');
+            if($emprestimo->save()) {
+                return redirect('emprestimos');
+            }
+        } else {
+            return redirect('login');
         }
     }
 
@@ -97,13 +112,17 @@ class EmprestimosController extends Controller
 
     public function devolver(Request $request, $id)
     {
-        $emprestimo = Emprestimo::find($id);
-        $emprestimo->dataDevolucao = \Carbon\Carbon::now();
-        $emprestimo->save();
+        if (Auth::check()) {
+            $emprestimo = Emprestimo::find($id);
+            $emprestimo->datadevolucao = \Carbon\Carbon::now();
+            $emprestimo->save();
 
-        if($emprestimo->save()) {
-            Session::flash('mensagem','Empréstimo Devolvido');
-            return redirect('/emprestimos');
+            if($emprestimo->save()) {
+                Session::flash('mensagem','Empréstimo Devolvido');
+                return redirect()->back();
+            }
+        } else {
+            return redirect('login');
         }
     }
 
@@ -127,10 +146,14 @@ class EmprestimosController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $emprestimo = Emprestimo::find($id);
+        if (Auth::check()) {
+            $emprestimo = Emprestimo::find($id);
 
-        $emprestimo->delete();
-        Session::flash('mensagem','Empréstimo excluído com sucesso');
-        return redirect(url('emprestimos/'));
+            $emprestimo->delete();
+            Session::flash('mensagem','Empréstimo Excluído com Sucesso');
+            return redirect(url('emprestimos/'));
+        } else {
+            return redirect('login');
+        }
     }
 }

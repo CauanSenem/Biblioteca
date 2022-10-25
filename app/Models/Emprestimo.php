@@ -13,11 +13,11 @@ class Emprestimo extends Model
     use HasFactory;
 
     public function contato() {
-        return $this->belongsTo(Contato::class);
+        return $this->belongsTo(Contato::class,'idContato','id');
     }
 
     public function livro() {
-        return $this->belongsTo(Livro::class);
+        return $this->belongsTo(Livro::class,'idLivro','id');
     }
 
     public function getDevolvidoAttribute() {
