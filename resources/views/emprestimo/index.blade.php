@@ -1,63 +1,59 @@
 @extends('layouts.app')
-@section('title','emprestimo de Livros')
+@section('title','Empréstimos')
 @section('content')
-<br>
     <h1>Empréstimos</h1>
-   @if(Session::has('mensagem'))
+    @if(Session::has('mensagem'))
         <div class="alert alert-info">
             {{Session::get('mensagem')}}
         </div>
-    @endif 
-    <br>
-    {{Form::open(['url'=>'emprestimos/buscar', 'method'=>'GET'])}}
-    <div class="row">
-        <div class="col-sm-3">
-            <div class="input-group">
-                @if($busca !== null)
-                &nbsp;<a class="btn btn-info" href="{{url
-                    ('emprestimos/')}}">Todos</a>&nbsp;
+    @endif
+    {{Form::open(['url'=>'emprestimos/buscar','method'=>'GET'])}}
+        <div class="row">
+            @if ((Auth::check()) && (Auth::user()->isAdmin()))
+                <div class="col-sm-3">
+                    <a class="btn btn-success" href="{{url('emprestimos/create')}}">Novo Empréstimo</a>
+                </div>
+            @endif
+            <div class="col-sm-9">
+                <div class="input-group ml-5">
+                    @if($busca !== null)
+                        &nbsp;<a class="btn btn-info" href="{{url('emprestimos/')}}">Todos</a>&nbsp;
                     @endif
-            {{Form::text('busca', $busca, ['class'=>'form-control',
-                'required', 'placeholder'=>'buscar'])}}
-                &nbsp;
-                <span class="input-group-btn">
-                {{Form::submit('Buscar', ['class'=>'btn btn-warning'])}}
-            </span>
+                    {{Form::text('busca',$busca,['class'=>'form-control','required','placeholder'=>'buscar'])}}
+                    &nbsp;
+                    <span class="input-group-btn">
+                        {{Form::submit('Buscar',['class'=>'btn btn-secondary'])}}
+                    </span>
+                </div>
             </div>
-            </div>
-            </div>
-            {{Form::close()}}
-            <br><br>
-  <table class="table table-striped">
+        </div>
+    {{Form::close()}}
+    <br />
+    <table class="table table-striped table-hover">
     <tr>
-    <th>ID</th>
-    <th>Contato</th>
-    <th>Livro</th>
-    <th>Data</th>
-    <th>Devolução</th>
+        <th>Id</th>
+        <th>Contato</th>
+        <th>Livro</th>
+        <th>Data</th>
+        <th>Devolução</th>
     </tr>
     @foreach ($emprestimos as $emprestimo)
-    <tr>
-       <td><a href="{{url('emprestimos/'.$emprestimo->id)}}">
-            {{$emprestimo->id}}</a>
-    </td>
-    <td>
-            {{$emprestimo->idContato}} -
-            {{$emprestimo->contato->nome}}
-    </td>
-    <td>
-            {{$emprestimo->idLivro}} -
-            {{$emprestimo->livro->titulo}}
-    </td>
-    <td>
-          
-            {{\Carbon\Carbon::create($emprestimo->dataHora)->format('d/m/Y H:i:s')}}
-    </td>    
-    <td>{!!$emprestimo->devolvido!!}</td>
-    </tr>
-    @endforeach
-</table> 
-<h5>Novo Empréstimo</h5>
-<a class="btn btn-primary" href="{{url('emprestimos/create')}}">Criar</a> 
-        {{$emprestimos->links()}}
-        @endsection
+            <tr>
+                <td>
+                    <a href="{{url('emprestimos/'.$emprestimo->id)}}">{{$emprestimo->id}}</a>
+                </td>
+                <td>
+                    {{$emprestimo->idContato}} - {{$emprestimo->contato->nome}}
+                </td>
+                <td>
+                    {{$emprestimo->idLivro}} - {{$emprestimo->livro->titulo}}
+                </td>
+                <td>
+                    {{\Carbon\Carbon::create($emprestimo->dataHora)->format('d/m/Y H:i:s')}}
+                </td>
+                <td>{!!$emprestimo->devolvido!!}</td>
+            </tr>
+        @endforeach
+    </table>
+    {{ $emprestimos->links() }}
+@endsection

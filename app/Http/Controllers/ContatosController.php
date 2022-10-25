@@ -16,12 +16,8 @@ class ContatosController extends Controller
      */
     public function index()
     {
-        if (Auth::check()) {
-            $contatos = Contato::paginate(5);
-            return view('contato.index',array('contatos' => $contatos,'busca'=>null));
-        } else {
-            return redirect('login');
-        }
+        $contatos = Contato::paginate(5);
+        return view('contato.index',array('contatos' => $contatos,'busca'=>null));
     }
 
     /**
@@ -42,7 +38,7 @@ class ContatosController extends Controller
      */
     public function create()
     {
-        if (Auth::check()) {
+        if ((Auth::check()) && (Auth::user()->isAdmin())) {
             return view('contato.create');
         }
         else {
@@ -59,7 +55,7 @@ class ContatosController extends Controller
      */
     public function store(Request $request)
     {
-        if (Auth::check()) {
+        if ((Auth::check()) && (Auth::user()->isAdmin())) {
             $this->validate($request,[
                 'nome' => 'required|min:3',
                 'email' => 'required|e-mail',
@@ -107,7 +103,7 @@ class ContatosController extends Controller
      */
     public function edit($id)
     {
-        if (Auth::check()) {
+        if ((Auth::check()) && (Auth::user()->isAdmin())) {
             $contato = Contato::find($id);
             return view('contato.edit',array('contato' => $contato));
         } else {
@@ -124,7 +120,7 @@ class ContatosController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if (Auth::check()) {
+        if ((Auth::check()) && (Auth::user()->isAdmin())) {
             $this->validate($request,[
                 'nome' => 'required|min:3',
                 'email' => 'required|e-mail|min:3',
@@ -161,7 +157,7 @@ class ContatosController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        if (Auth::check()) {
+        if ((Auth::check()) && (Auth::user()->isAdmin())) {
             $contato = Contato::find($id);
             if (isset($request->foto)) {
             unlink($request->foto);
